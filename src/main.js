@@ -1,5 +1,3 @@
-"use strict";
-
 const createSiteMenuTemplate = () => {
   return (
     `<nav class="trip-controls__trip-tabs  trip-tabs">
