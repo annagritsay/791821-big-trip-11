@@ -101,7 +101,6 @@ const generatePoint = () => {
 const generatePoints = (count) => {
   let pointsElements = [];
   for (let i = 0; i < count; i++) {
-    console.log(generatePoint());
     pointsElements.push(generatePoint());
   }
 

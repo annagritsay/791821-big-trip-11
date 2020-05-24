@@ -1,7 +1,7 @@
 import {render} from './render.js';
-import {points} from './render.js';
+import {points} from './mocks.js';
 
-export const createEventEditTemplate = () => {
+export const createEventEditTemplate = (item) => {
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
@@ -134,7 +134,7 @@ export const createEventEditTemplate = () => {
               <label class="event__offer-label" for="event-offer-train-1">
                 <span class="event__offer-title">Travel by train</span>
                 &plus;
-                &euro;&nbsp;<span class="event__offer-price">40</span>
+                &euro;&nbsp;<span class="event__offer-price">${item.price}</span>
               </label>
             </div>
           </div>
@@ -159,7 +159,7 @@ export const createEventEditTemplate = () => {
 
 const renderEventEditTemplate = () => {
   const siteMainElement = document.querySelector(`.trip-main`);
-  render(siteMainElement, createEventEditTemplate(), `afterbegin`);
+  render(siteMainElement, createEventEditTemplate(points[0]), `afterbegin`);
 };
 
 export {renderEventEditTemplate};
