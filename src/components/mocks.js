@@ -88,9 +88,9 @@ const offers = [
 const citys = [`Москва`, `Питер`, `Сочи`];
 const generatePoint = () => {
   return {
-    type: types[getRandomNumber(0, types.length)],
-    town: citys[getRandomNumber(0, citys.length)],
-    offer: offers[getRandomNumber(0, offers.length)],
+    type: types[getRandomNumber(0, types.length - 1)],
+    town: citys[getRandomNumber(0, citys.length - 1)],
+    offer: offers[getRandomNumber(0, offers.length - 1)],
     description: getDescriptions(),
     pictures: getPictures(),
     price: getRandomNumber(0, MAX_PRICE),
