@@ -1,35 +1,36 @@
 import {render} from './render.js';
+import {points} from './mocks.js';
 
-export const createPointsTemplate = () => {
+export const createPointsTemplate = (item) => {
   return (
     `<li class="trip-events__item">
       <div class="event">
         <div class="event__type">
             <img class="event__type-icon" width="42" height="42" src="img/icons/sightseeing.png" alt="Event type icon">
                     </div>
-            <h3 class="event__title">Sightseeing in Chamonix</h3>
+            <h3 class="event__title">Sightseeing in ${item.town}</h3>
             <div class="event__schedule">
             <p class="event__time">
-                <time class="event__start-time" datetime="2019-03-19T11:20">14:20</time>
+                <time class="event__start-time" datetime="${item.time}">${item.time}</time>
                 &mdash;
-                        <time class="event__end-time" datetime="2019-03-19T13:00">13:00</time>
+                        <time class="event__end-time" datetime="${item.time}">${item.time}</time>
             </p>
             <p class="event__duration">1H 20M</p>
             </div>
             <p class="event__price">
-            &euro;&nbsp;<span class="event__price-value">50</span>
+            &euro;&nbsp;<span class="event__price-value">${item.price}</span>
             </p>
             <h4 class="visually-hidden">Offers:</h4>
             <ul class="event__selected-offers">
             <li class="event__offer">
-                <span class="event__offer-title">Book tickets</span>
+                <span class="event__offer-title">${item.offer.name}</span>
                 &plus;
-                        &euro;&nbsp;<span class="event__offer-price">40</span>
+                &euro;&nbsp;<span class="event__offer-price">${item.offer.price}</span>
             </li>
             <li class="event__offer">
-                <span class="event__offer-title">Lunch in city</span>
+                <span class="event__offer-title">${item.offer.name}</span>
                 &plus;
-                            &euro;&nbsp;<span class="event__offer-price">30</span>
+                            &euro;&nbsp;<span class="event__offer-price">${item.offer.price}</span>
             </li>
             </ul>
             <button class="event__rollup-btn" type="button">
@@ -43,7 +44,7 @@ const POINTS_COUNT = 10;
 const renderPointsTemplate = () => {
   const siteListElement = document.querySelector(`.trip-events__list`);
   for (let i = 0; i < POINTS_COUNT; i++) {
-    render(siteListElement, createPointsTemplate(), `beforeend`);
+    render(siteListElement, createPointsTemplate(points[i]), `beforeend`);
   }
 };
 

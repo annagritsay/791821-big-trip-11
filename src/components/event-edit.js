@@ -1,4 +1,5 @@
 import {render} from './render.js';
+import {points} from './render.js';
 
 export const createEventEditTemplate = () => {
   return (
