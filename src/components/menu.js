@@ -1,5 +1,6 @@
 import {render} from './render.js';
 import {menuItems} from './mocks.js';
+import {createElement} from "../utils.js";
 
 const createSiteMenuTemplate = (items) => {
   const links = items.reduce((acc, element) => {
@@ -13,9 +14,26 @@ const createSiteMenuTemplate = (items) => {
   );
 };
 
-const renderSiteMenuTemplate = () => {
-  const siteMenuElement = document.querySelector(`.trip-controls .visually-hidden`);
-  render(siteMenuElement, createSiteMenuTemplate(menuItems), `afterend`);
-};
+export default class Menu {
+  constructor(task) {
+    this._task = task;
 
-export {renderSiteMenuTemplate};
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createSiteMenuTemplate(this._task);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
