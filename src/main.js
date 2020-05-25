@@ -9,11 +9,11 @@ import {render, RenderPosition} from "./utils.js";
 import {menuItems, points, filters} from './components/mocks.js';
 
 const Menu = new MenuComponent(menuItems);
-const CostAndPrice = new CostAndPriceComponent(menuItems);
+const CostAndPrice = new CostAndPriceComponent();
 const Filter = new FilterComponent(filters);
-const Sort = new SortComponent(menuItems);
+const Sort = new SortComponent();
 const EventEdit = new EventEditComponent(points[0]);
-const Content = new ContentComponent(menuItems);
+const Content = new ContentComponent();
 
 const siteMainElement = document.querySelector(`.trip-main`);
 render(siteMainElement, CostAndPrice.getElement(), RenderPosition.AFTERBEGIN);
