@@ -1,5 +1,4 @@
-import {render} from './render.js';
-import {points} from './mocks.js';
+import {createElement} from "../utils.js";
 
 export const createPointsTemplate = (item) => {
   return (
@@ -40,14 +39,26 @@ export const createPointsTemplate = (item) => {
     </li>`
   );
 };
-const POINTS_COUNT = 10;
-const renderPointsTemplate = () => {
-  const siteListElement = document.querySelector(`.trip-events__list`);
-  for (let i = 0; i < POINTS_COUNT; i++) {
-    render(siteListElement, createPointsTemplate(points[i]), `beforeend`);
+export default class Content {
+  constructor(items) {
+    this._data = items;
+
+    this._element = null;
   }
-};
 
-export {renderPointsTemplate};
+  getTemplate() {
+    return createPointsTemplate(this._data);
+  }
 
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
 
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

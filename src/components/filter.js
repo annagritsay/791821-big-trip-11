@@ -1,5 +1,4 @@
-import {render} from './render.js';
-import {filters} from './mocks.js';
+import {createElement} from "../utils.js";
 
 const createFilterTemplate = (items) => {
   const filter = items.reduce((acc, element) => {
@@ -19,9 +18,27 @@ const createFilterTemplate = (items) => {
   );
 };
 
-const renderFilterTemplate = () => {
-  const tripControlsElement = document.querySelector(`.trip-controls`);
-  render(tripControlsElement, createFilterTemplate(filters), `beforeend`);
-};
+export default class Content {
+  constructor(items) {
+    this._data = items;
 
-export {renderFilterTemplate};
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilterTemplate(this._data);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+

@@ -1,4 +1,4 @@
-import {render} from './render.js';
+import {createElement} from "../utils.js";
 
 const createCostAndPriceTemplate = () => {
   return (
@@ -16,9 +16,27 @@ const createCostAndPriceTemplate = () => {
   );
 };
 
-const renderCostAndPriceTemplate = () => {
-  const siteMainElement = document.querySelector(`.trip-main`);
-  render(siteMainElement, createCostAndPriceTemplate(), `afterbegin`);
-};
+export default class CostAndPrice {
+  constructor(items) {
+    this._data = items;
 
-export {renderCostAndPriceTemplate};
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createCostAndPriceTemplate(this._data);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+

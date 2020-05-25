@@ -1,5 +1,4 @@
-import {render} from './render.js';
-import {points} from './mocks.js';
+import {createElement} from "../utils.js";
 
 export const createEventEditTemplate = (item) => {
   return (
@@ -157,9 +156,26 @@ export const createEventEditTemplate = (item) => {
   );
 };
 
-const renderEventEditTemplate = () => {
-  const siteSortElement = document.querySelector(`.trip-sort`);
-  render(siteSortElement, createEventEditTemplate(points[0]), `afterend`);
-};
+export default class EventEdit {
+  constructor(items) {
+    this._data = items;
 
-export {renderEventEditTemplate};
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventEditTemplate(this._data);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -1,4 +1,4 @@
-import {render} from './render.js';
+import {createElement} from "../utils.js";
 
 const createSortTemplate = () => {
   return (
@@ -35,9 +35,26 @@ const createSortTemplate = () => {
   );
 };
 
-const renderSortTemplate = () => {
-  const tripEventsElement = document.querySelector(`.trip-events`);
-  render(tripEventsElement, createSortTemplate(), `beforeend`);
-};
+export default class Content {
+  constructor(items) {
+    this._data = items;
 
-export {renderSortTemplate};
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createSortTemplate(this._data);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
