@@ -1,4 +1,4 @@
-import {render} from './render.js';
+import {createElement} from "../utils.js";
 
 const createContentTemplate = () => {
   return (
@@ -15,9 +15,26 @@ const createContentTemplate = () => {
   );
 };
 
-const renderContentTemplate = () => {
-  const tripEventsElement = document.querySelector(`.trip-events`);
-  render(tripEventsElement, createContentTemplate(), `beforeend`);
-};
+export default class Content {
+  constructor(items) {
+    this._data = items;
 
-export {renderContentTemplate};
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createContentTemplate(this._data);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

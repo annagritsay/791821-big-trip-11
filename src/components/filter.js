@@ -1,31 +1,44 @@
-import {render} from './render.js';
+import {createElement} from "../utils.js";
 
-const createFilterTemplate = () => {
+const createFilterTemplate = (items) => {
+  const filter = items.reduce((acc, element) => {
+    return (
+      `${acc}
+      <div class="trip-filters__filter">
+        <input id="filter-${element.name.toLowerCase()}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${element.name.toLowerCase()}" checked>
+        <label class="trip-filters__filter-label" for="filter-${element.name.toLowerCase()}">${element.name}</label>
+      </div>`
+    );
+  }, ``);
   return (
     `<form class="trip-filters" action="#" method="get">
-      <div class="trip-filters__filter">
-        <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything" checked>
-        <label class="trip-filters__filter-label" for="filter-everything">Everything</label>
-      </div>
-
-      <div class="trip-filters__filter">
-        <input id="filter-future" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="future">
-        <label class="trip-filters__filter-label" for="filter-future">Future</label>
-      </div>
-
-      <div class="trip-filters__filter">
-        <input id="filter-past" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="past">
-        <label class="trip-filters__filter-label" for="filter-past">Past</label>
-      </div>
-
+      ${filter}
       <button class="visually-hidden" type="submit">Accept filter</button>
     </form>`
   );
 };
 
-const renderFilterTemplate = () => {
-  const tripControlsElement = document.querySelector(`.trip-controls`);
-  render(tripControlsElement, createFilterTemplate(), `beforeend`);
-};
+export default class Content {
+  constructor(items) {
+    this._data = items;
 
-export {renderFilterTemplate};
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilterTemplate(this._data);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
