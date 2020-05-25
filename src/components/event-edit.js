@@ -158,8 +158,8 @@ export const createEventEditTemplate = (item) => {
 };
 
 const renderEventEditTemplate = () => {
-  const siteMainElement = document.querySelector(`.trip-main`);
-  render(siteMainElement, createEventEditTemplate(points[0]), `afterbegin`);
+  const siteSortElement = document.querySelector(`.trip-sort`);
+  render(siteSortElement, createEventEditTemplate(points[0]), `afterend`);
 };
 
 export {renderEventEditTemplate};

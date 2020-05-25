@@ -1,9 +1,7 @@
-import {render} from './render.js';
-import {menuItems} from './mocks.js';
 import {createElement} from "../utils.js";
 
-const createSiteMenuTemplate = (items) => {
-  const links = items.reduce((acc, element) => {
+const createSiteMenuTemplate = (it) => {
+  const links = it.reduce((acc, element) => {
     return (
       `${acc}<a class="trip-tabs__btn${element.isActive ? ` trip-tabs__btn--active` : ``}" href="#">${element.name}</a>`
     );
@@ -15,14 +13,14 @@ const createSiteMenuTemplate = (items) => {
 };
 
 export default class Menu {
-  constructor(task) {
-    this._task = task;
+  constructor(items) {
+    this._data = items;
 
     this._element = null;
   }
 
   getTemplate() {
-    return createSiteMenuTemplate(this._task);
+    return createSiteMenuTemplate(this._data);
   }
 
   getElement() {

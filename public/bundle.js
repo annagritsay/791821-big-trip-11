@@ -136,9 +136,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createEventEditTemplate", function() { return createEventEditTemplate; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderEventEditTemplate", function() { return renderEventEditTemplate; });
 /* harmony import */ var _render_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./render.js */ "./src/components/render.js");
+/* harmony import */ var _mocks_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mocks.js */ "./src/components/mocks.js");
 
 
-const createEventEditTemplate = () => {
+
+const createEventEditTemplate = (item) => {
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
@@ -271,7 +273,7 @@ const createEventEditTemplate = () => {
               <label class="event__offer-label" for="event-offer-train-1">
                 <span class="event__offer-title">Travel by train</span>
                 &plus;
-                &euro;&nbsp;<span class="event__offer-price">40</span>
+                &euro;&nbsp;<span class="event__offer-price">${item.price}</span>
               </label>
             </div>
           </div>
@@ -296,7 +298,7 @@ const createEventEditTemplate = () => {
 
 const renderEventEditTemplate = () => {
   const siteMainElement = document.querySelector(`.trip-main`);
-  Object(_render_js__WEBPACK_IMPORTED_MODULE_0__["render"])(siteMainElement, createEventEditTemplate(), `afterbegin`);
+  Object(_render_js__WEBPACK_IMPORTED_MODULE_0__["render"])(siteMainElement, createEventEditTemplate(_mocks_js__WEBPACK_IMPORTED_MODULE_1__["points"][0]), `afterbegin`);
 };
 
 
@@ -315,26 +317,23 @@ const renderEventEditTemplate = () => {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderFilterTemplate", function() { return renderFilterTemplate; });
 /* harmony import */ var _render_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./render.js */ "./src/components/render.js");
+/* harmony import */ var _mocks_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mocks.js */ "./src/components/mocks.js");
 
 
-const createFilterTemplate = () => {
+
+const createFilterTemplate = (items) => {
+  const filter = items.reduce((acc, element) => {
+    return (
+      `${acc}
+      <div class="trip-filters__filter">
+        <input id="filter-${element.name.toLowerCase()}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${element.name.toLowerCase()}" checked>
+        <label class="trip-filters__filter-label" for="filter-${element.name.toLowerCase()}">${element.name}</label>
+      </div>`
+    );
+  }, ``);
   return (
     `<form class="trip-filters" action="#" method="get">
-      <div class="trip-filters__filter">
-        <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything" checked>
-        <label class="trip-filters__filter-label" for="filter-everything">Everything</label>
-      </div>
-
-      <div class="trip-filters__filter">
-        <input id="filter-future" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="future">
-        <label class="trip-filters__filter-label" for="filter-future">Future</label>
-      </div>
-
-      <div class="trip-filters__filter">
-        <input id="filter-past" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="past">
-        <label class="trip-filters__filter-label" for="filter-past">Past</label>
-      </div>
-
+      ${filter}
       <button class="visually-hidden" type="submit">Accept filter</button>
     </form>`
   );
@@ -342,7 +341,7 @@ const createFilterTemplate = () => {
 
 const renderFilterTemplate = () => {
   const tripControlsElement = document.querySelector(`.trip-controls`);
-  Object(_render_js__WEBPACK_IMPORTED_MODULE_0__["render"])(tripControlsElement, createFilterTemplate(), `beforeend`);
+  Object(_render_js__WEBPACK_IMPORTED_MODULE_0__["render"])(tripControlsElement, createFilterTemplate(_mocks_js__WEBPACK_IMPORTED_MODULE_1__["filters"]), `beforeend`);
 };
 
 
@@ -354,29 +353,197 @@ const renderFilterTemplate = () => {
 /*!********************************!*\
   !*** ./src/components/menu.js ***!
   \********************************/
-/*! exports provided: renderSiteMenuTemplate */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderSiteMenuTemplate", function() { return renderSiteMenuTemplate; });
-/* harmony import */ var _render_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./render.js */ "./src/components/render.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Menu; });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils.js */ "./src/utils.js");
 
 
-const createSiteMenuTemplate = () => {
+const createSiteMenuTemplate = (it) => {
+  const links = it.reduce((acc, element) => {
+    return (
+      `${acc}<a class="trip-tabs__btn${element.isActive ? ` trip-tabs__btn--active` : ``}" href="#">${element.name}</a>`
+    );
+  }, ``);
   return (
-    `<nav class="trip-controls__trip-tabs  trip-tabs">
-      <a class="trip-tabs__btn  trip-tabs__btn--active" href="#">Table</a>
-      <a class="trip-tabs__btn" href="#">Stats</a>
+    `<nav class="trip-controls__trip-tabs  trip-tabs">${links}
     </nav>`
   );
 };
 
-const renderSiteMenuTemplate = () => {
-  const siteMenuElement = document.querySelector(`.trip-controls .visually-hidden`);
-  Object(_render_js__WEBPACK_IMPORTED_MODULE_0__["render"])(siteMenuElement, createSiteMenuTemplate(), `afterend`);
+class Menu {
+  constructor(items) {
+    this._data = items;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createSiteMenuTemplate(this._data);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["createElement"])(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/components/mocks.js":
+/*!*********************************!*\
+  !*** ./src/components/mocks.js ***!
+  \*********************************/
+/*! exports provided: points, menuItems, filters */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "points", function() { return points; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "menuItems", function() { return menuItems; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "filters", function() { return filters; });
+const getRandomNumber = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+const months = [
+  `Jan`,
+  `Feb`,
+  `Mar`,
+  `Apr`,
+  `May`,
+  `Jun`,
+  `Jul`,
+  `Aug`,
+  `Sep`,
+  `Oct`,
+  `Nov`,
+  `Dec`
+];
+const getDate = () => {
+  const day = getRandomNumber(1, 30);
+  const year = getRandomNumber(2020, 2021);
+  const month = months[getRandomNumber(1, 12)];
+  return `${year}-${month}-${day}`;
+};
+const getTime = () => {
+  const hours = getRandomNumber(1, 24);
+  const minutes = getRandomNumber(1, 60);
+  return `${hours}:${minutes}`;
+};
+let pictures = [];
+const getPictures = () => {
+  for (let i = 1; i < getRandomNumber(1, 5); i++) {
+    pictures.push(`http://picsum.photos/248/152?r=${Math.random()}`);
+  }
+};
+const descriptionsVariables = [
+  `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
+  `Cras aliquet varius magna, non porta ligula feugiat eget.`,
+  `Fusce tristique felis at fermentum pharetra.`,
+  `Aliquam id orci ut lectus varius viverra.`,
+  `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.`,
+  `Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.`,
+  `Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.`,
+  `Sed sed nisi sed augue convallis suscipit in sed felis.`,
+  `Aliquam erat volutpat.`,
+  `Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`
+];
+let descriptions = [];
+const getDescriptions = () => {
+  for (let i = 1; i < getRandomNumber(1, 5); i++) {
+    descriptions.push(descriptionsVariables[getRandomNumber(0, 9)]);
+  }
 };
 
+const MAX_PRICE = 500;
+const types = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
+const offers = [
+  {
+    name: `Add luggage`,
+    price: 10,
+    checked: true
+  },
+  {
+    name: `Switch to comfort class`,
+    price: 150,
+    checked: true
+  },
+  {
+    name: `Add meal`,
+    price: 2,
+    checked: true
+  },
+  {
+    name: `Choose seats`,
+    price: 9,
+    checked: true
+  },
+  {
+    name: `Order Uber`,
+    price: 30,
+    checked: true
+  },
+  {
+    name: `Book tickets`,
+    price: 40,
+    checked: true
+  }
+];
+const citys = [`Москва`, `Питер`, `Сочи`];
+const generatePoint = () => {
+  return {
+    type: types[getRandomNumber(0, types.length - 1)],
+    town: citys[getRandomNumber(0, citys.length - 1)],
+    offer: offers[getRandomNumber(0, offers.length - 1)],
+    description: getDescriptions(),
+    pictures: getPictures(),
+    price: getRandomNumber(0, MAX_PRICE),
+    day: getDate(),
+    time: getTime(),
+  };
+};
+const generatePoints = (count) => {
+  let pointsElements = [];
+  for (let i = 0; i < count; i++) {
+    pointsElements.push(generatePoint());
+  }
+
+  return pointsElements;
+};
+const CARDS_COUNT = 12;
+const points = generatePoints(CARDS_COUNT);
+const menuItems = [
+  {
+    name: `Table`,
+    isActive: true
+  },
+  {
+    name: `Stats`,
+    isActive: false
+  }
+];
+const filters = [
+  {
+    name: `Everything`,
+  },
+  {
+    name: `Future`,
+  },
+  {
+    name: `Past`,
+  },
+];
 
 
 
@@ -394,38 +561,40 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createPointsTemplate", function() { return createPointsTemplate; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderPointsTemplate", function() { return renderPointsTemplate; });
 /* harmony import */ var _render_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./render.js */ "./src/components/render.js");
+/* harmony import */ var _mocks_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mocks.js */ "./src/components/mocks.js");
 
 
-const createPointsTemplate = () => {
+
+const createPointsTemplate = (item) => {
   return (
     `<li class="trip-events__item">
       <div class="event">
         <div class="event__type">
             <img class="event__type-icon" width="42" height="42" src="img/icons/sightseeing.png" alt="Event type icon">
                     </div>
-            <h3 class="event__title">Sightseeing in Chamonix</h3>
+            <h3 class="event__title">Sightseeing in ${item.town}</h3>
             <div class="event__schedule">
             <p class="event__time">
-                <time class="event__start-time" datetime="2019-03-19T11:20">14:20</time>
+                <time class="event__start-time" datetime="${item.time}">${item.time}</time>
                 &mdash;
-                        <time class="event__end-time" datetime="2019-03-19T13:00">13:00</time>
+                        <time class="event__end-time" datetime="${item.time}">${item.time}</time>
             </p>
             <p class="event__duration">1H 20M</p>
             </div>
             <p class="event__price">
-            &euro;&nbsp;<span class="event__price-value">50</span>
+            &euro;&nbsp;<span class="event__price-value">${item.price}</span>
             </p>
             <h4 class="visually-hidden">Offers:</h4>
             <ul class="event__selected-offers">
             <li class="event__offer">
-                <span class="event__offer-title">Book tickets</span>
+                <span class="event__offer-title">${item.offer.name}</span>
                 &plus;
-                        &euro;&nbsp;<span class="event__offer-price">40</span>
+                &euro;&nbsp;<span class="event__offer-price">${item.offer.price}</span>
             </li>
             <li class="event__offer">
-                <span class="event__offer-title">Lunch in city</span>
+                <span class="event__offer-title">${item.offer.name}</span>
                 &plus;
-                            &euro;&nbsp;<span class="event__offer-price">30</span>
+                            &euro;&nbsp;<span class="event__offer-price">${item.offer.price}</span>
             </li>
             </ul>
             <button class="event__rollup-btn" type="button">
@@ -439,7 +608,7 @@ const POINTS_COUNT = 10;
 const renderPointsTemplate = () => {
   const siteListElement = document.querySelector(`.trip-events__list`);
   for (let i = 0; i < POINTS_COUNT; i++) {
-    Object(_render_js__WEBPACK_IMPORTED_MODULE_0__["render"])(siteListElement, createPointsTemplate(), `beforeend`);
+    Object(_render_js__WEBPACK_IMPORTED_MODULE_0__["render"])(siteListElement, createPointsTemplate(_mocks_js__WEBPACK_IMPORTED_MODULE_1__["points"][i]), `beforeend`);
   }
 };
 
@@ -582,6 +751,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_event_edit_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/event-edit.js */ "./src/components/event-edit.js");
 /* harmony import */ var _components_content_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/content.js */ "./src/components/content.js");
 /* harmony import */ var _components_points_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/points.js */ "./src/components/points.js");
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils.js */ "./src/utils.js");
+/* harmony import */ var _components_mocks_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/mocks.js */ "./src/components/mocks.js");
+
+
 
 
 
@@ -591,12 +764,52 @@ __webpack_require__.r(__webpack_exports__);
 
 
 Object(_components_siteMain_js__WEBPACK_IMPORTED_MODULE_0__["renderCostAndPriceTemplate"])();
-Object(_components_menu_js__WEBPACK_IMPORTED_MODULE_1__["renderSiteMenuTemplate"])();
 Object(_components_filter_js__WEBPACK_IMPORTED_MODULE_2__["renderFilterTemplate"])();
 Object(_components_sort_js__WEBPACK_IMPORTED_MODULE_3__["renderSortTemplate"])();
 Object(_components_event_edit_js__WEBPACK_IMPORTED_MODULE_4__["renderEventEditTemplate"])();
 Object(_components_content_js__WEBPACK_IMPORTED_MODULE_5__["renderContentTemplate"])();
 Object(_components_points_js__WEBPACK_IMPORTED_MODULE_6__["renderPointsTemplate"])();
+
+const Menu = new _components_menu_js__WEBPACK_IMPORTED_MODULE_1__["default"](_components_mocks_js__WEBPACK_IMPORTED_MODULE_8__["menuItems"]);
+const siteMenuElement = document.querySelector(`.trip-controls .visually-hidden`);
+Object(_utils_js__WEBPACK_IMPORTED_MODULE_7__["render"])(siteMenuElement, Menu.getElement(), _utils_js__WEBPACK_IMPORTED_MODULE_7__["RenderPosition"].AFTERBEGIN);
+
+
+
+/***/ }),
+
+/***/ "./src/utils.js":
+/*!**********************!*\
+  !*** ./src/utils.js ***!
+  \**********************/
+/*! exports provided: createElement, RenderPosition, render */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createElement", function() { return createElement; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RenderPosition", function() { return RenderPosition; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};
+const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`,
+};
+const render = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
 
 
 /***/ })
