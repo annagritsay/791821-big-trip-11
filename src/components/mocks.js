@@ -129,4 +129,5 @@ const filters = [
     name: `Past`,
   },
 ];
+
 export {points, menuItems, filters};
