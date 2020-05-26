@@ -4,24 +4,30 @@ import FilterComponent from './components/filter.js';
 import SortComponent from './components/sort.js';
 import EventEditComponent from './components/event-edit.js';
 import ContentComponent from './components/content.js';
+import GroupDaysComponent from './components/groupDays.js';
+import DayComponent from './components/day.js';
 import NoPointsComponent from './components/nopoints.js';
 import PointsComponent from './components/points.js';
 import {render, RenderPosition} from "./utils.js";
 import {menuItems, points, filters} from './components/mocks.js';
+
+const POINTS_COUNT = 10;
 
 const Menu = new MenuComponent(menuItems);
 const CostAndPrice = new CostAndPriceComponent();
 const Filter = new FilterComponent(filters);
 const Sort = new SortComponent();
 const Content = new ContentComponent();
+const GroupDays = new GroupDaysComponent();
+const Day = new DayComponent();
+const NoPoints = new NoPointsComponent();
 
 const siteMainElement = document.querySelector(`.trip-main`);
-render(siteMainElement, CostAndPrice.getElement(), RenderPosition.AFTERBEGIN);
-
 const tripControlsElement = document.querySelector(`.trip-controls`);
-render(tripControlsElement, Filter.getElement(), RenderPosition.BEFOREEND);
-
 const siteMenuElement = document.querySelector(`.trip-controls .visually-hidden`);
+
+render(siteMainElement, CostAndPrice.getElement(), RenderPosition.AFTERBEGIN);
+render(tripControlsElement, Filter.getElement(), RenderPosition.BEFOREEND);
 render(siteMenuElement, Menu.getElement(), RenderPosition.AFTERBEGIN);
 
 const renderPoint = (list, point) => {
@@ -59,17 +65,29 @@ const renderPoint = (list, point) => {
 
   render(list, Points.getElement(), RenderPosition.BEFOREEND);
 };
+
 const tripEventsElement = document.querySelector(`.trip-events`);
-if (points.length === 0) {
-  const NoPoints = new NoPointsComponent();
-  render(tripEventsElement, NoPoints.getElement(), RenderPosition.AFTERBEGIN);
-} else {
+
+const renderContainer = () => {
+
+  if (points.length === 0) {
+    render(tripEventsElement, NoPoints.getElement(), RenderPosition.AFTERBEGIN);
+
+    return;
+  }
+
   render(tripEventsElement, Sort.getElement(), RenderPosition.AFTERBEGIN);
   render(tripEventsElement, Content.getElement(), RenderPosition.BEFOREEND);
+
+  const tripDays = document.querySelector(`.trip-days`);
+  render(tripDays, GroupDays.getElement(), RenderPosition.BEFOREEND);
+
+  const day = document.querySelector(`.day`);
+  render(day, Day.getElement(), RenderPosition.BEFOREEND);
+
   const siteListElement = document.querySelector(`.trip-events__list`);
-  const POINTS_COUNT = 10;
   for (let i = 0; i < POINTS_COUNT; i++) {
     renderPoint(siteListElement, points[i]);
   }
-}
-
+};
+renderContainer();
