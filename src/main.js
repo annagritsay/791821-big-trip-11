@@ -31,11 +31,11 @@ render(siteMenuElement, Menu, RenderPosition.AFTERBEGIN);
 
 const renderPoint = (list, point) => {
   const replaceTaskToEdit = () => {
-    replace(list, EventEdit.getElement(), Points.getElement());
+    replace(EventEdit, Points);
   };
 
   const replaceEditToTask = () => {
-    replace(list, Points.getElement(), EventEdit.getElement());
+    replace(Points, EventEdit);
   };
 
   const onEscKeyDown = (evt) => {
@@ -47,15 +47,13 @@ const renderPoint = (list, point) => {
     }
   };
   const Points = new PointsComponent(point);
-  const editButton = Points.getElement().querySelector(`.event__rollup-btn`);
-  editButton.addEventListener(`click`, () => {
+  Points.setEditButtonClickRollup(() => {
     replaceTaskToEdit();
     document.addEventListener(`keydown`, onEscKeyDown);
   });
 
   const EventEdit = new EventEditComponent(point);
-  const editForm = EventEdit.getElement().querySelector(`.event__save-btn`);
-  editForm.addEventListener(`submit`, (evt) => {
+  EventEdit.setEditButtonClickSave((evt) => {
     evt.preventDefault();
     replaceEditToTask();
     document.removeEventListener(`keydown`, onEscKeyDown);

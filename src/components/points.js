@@ -48,4 +48,8 @@ export default class Content extends AbstractComponent {
   getTemplate() {
     return createPointsTemplate(this._data);
   }
+  setEditButtonClickRollup(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, handler);
+  }
 }
