@@ -1,6 +1,7 @@
-import {createElement} from "../utils.js";
+import AbstractComponent from "./abstract-component.js";
 
 const createFilterTemplate = (items) => {
+
   const filter = items.reduce((acc, element) => {
     return (
       `${acc}
@@ -18,27 +19,13 @@ const createFilterTemplate = (items) => {
   );
 };
 
-export default class Content {
-  constructor(items) {
-    this._data = items;
+export default class Filter extends AbstractComponent {
+  constructor(filters) {
+    super();
 
-    this._element = null;
+    this._filters = filters;
   }
-
   getTemplate() {
-    return createFilterTemplate(this._data);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+    return createFilterTemplate(this._filters);
   }
 }
-

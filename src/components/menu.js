@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import AbstractComponent from "./abstract-component.js";
 
 const createSiteMenuTemplate = (it) => {
   const links = it.reduce((acc, element) => {
@@ -12,26 +12,13 @@ const createSiteMenuTemplate = (it) => {
   );
 };
 
-export default class Menu {
-  constructor(items) {
-    this._data = items;
+export default class Menu extends AbstractComponent {
+  constructor(data) {
+    super();
 
-    this._element = null;
+    this._data = data;
   }
-
   getTemplate() {
     return createSiteMenuTemplate(this._data);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
