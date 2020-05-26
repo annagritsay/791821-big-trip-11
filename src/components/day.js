@@ -1,13 +1,13 @@
 import {createElement} from "../utils.js";
 
-const createAllDaysTemplate = () => {
+const createDayTemplate = () => {
   return (
-    `<ul class="trip-days">
-      </ul>`
+    `<ul class="trip-events__list">
+    </ul>`
   );
 };
 
-export default class AllDays {
+export default class Day {
   constructor(items) {
     this._data = items;
 
@@ -15,7 +15,7 @@ export default class AllDays {
   }
 
   getTemplate() {
-    return createAllDaysTemplate(this._data);
+    return createDayTemplate(this._data);
   }
 
   getElement() {
