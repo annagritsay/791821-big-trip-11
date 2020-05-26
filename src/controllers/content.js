@@ -1,4 +1,4 @@
-import SortComponent from '../components/sort.js';
+import SortComponent, {SortType} from '../components/sort.js';
 import EventEditComponent from '../components/event-edit.js';
 import ContentComponent from '../components/content.js';
 import GroupDaysComponent from '../components/group-days.js';
@@ -8,11 +8,7 @@ import PointsComponent from '../components/points.js';
 import {render, replace, RenderPosition} from "../utils/render.js";
 
 const POINTS_COUNT = 10;
-const Sort = new SortComponent();
-const Content = new ContentComponent();
-const GroupDays = new GroupDaysComponent();
-const Day = new DayComponent();
-const NoPoints = new NoPointsComponent();
+
 
 const renderPoint = (list, point) => {
   const replaceTaskToEdit = () => {
@@ -47,36 +43,66 @@ const renderPoint = (list, point) => {
   render(list, Points, RenderPosition.BEFOREEND);
 };
 
-const renderContainer = (contener, data) => {
-  if (data.length === 0) {
-    render(contener, NoPoints, RenderPosition.AFTERBEGIN);
+const getSortedTasks = (tasks, sortType, from, to) => {
+  let sortedTasks = [];
+  const showingTasks = tasks.slice();
 
-    return;
+  switch (sortType) {
+    case SortType.TIME:
+      sortedTasks = showingTasks.sort((a, b) => a.dueDate - b.dueDate);
+      break;
+    case SortType.PRICE:
+      sortedTasks = showingTasks.sort((a, b) => b.dueDate - a.dueDate);
+      break;
+    case SortType.EVENT:
+      sortedTasks = showingTasks;
+      break;
   }
 
-  render(contener, Sort, RenderPosition.AFTERBEGIN);
-  render(contener, Content, RenderPosition.BEFOREEND);
-
-  const tripDays = document.querySelector(`.trip-days`);
-  render(tripDays, GroupDays, RenderPosition.BEFOREEND);
-
-  const day = document.querySelector(`.day`);
-  render(day, Day, RenderPosition.BEFOREEND);
-
-  const siteListElement = document.querySelector(`.trip-events__list`);
-  for (let i = 0; i < POINTS_COUNT; i++) {
-    renderPoint(siteListElement, data[i]);
-  }
+  return sortedTasks.slice(from, to);
 };
 
 export default class ContentController {
   constructor(container) {
-
     this._container = container;
+
+    this._Sort = new SortComponent();
+    this._Content = new ContentComponent();
+    this._GroupDays = new GroupDaysComponent();
+    this._Day = new DayComponent();
+    this._NoPoints = new NoPointsComponent();
   }
 
   render(data) {
 
-    renderContainer(this._container, data);
+    const container = this._container;
+    if (data.length === 0) {
+      render(container, this._NoPoints, RenderPosition.AFTERBEGIN);
+
+      return;
+    }
+    render(container, this._Sort, RenderPosition.AFTERBEGIN);
+    render(container, this._Content, RenderPosition.BEFOREEND);
+
+    const tripDays = document.querySelector(`.trip-days`);
+    render(tripDays, this._GroupDays, RenderPosition.BEFOREEND);
+
+    const day = document.querySelector(`.day`);
+    render(day, this._Day, RenderPosition.BEFOREEND);
+
+    const siteListElement = document.querySelector(`.trip-events__list`);
+    for (let i = 0; i < POINTS_COUNT; i++) {
+      renderPoint(siteListElement, data[i]);
+    }
+
+    this._Sort.setSortTypeChangeHandler((sortType) => {
+      const sortedTasks = getSortedTasks(data, sortType, 0, POINTS_COUNT);
+      siteListElement.innerHTML = ``;
+      sortedTasks.slice(0, POINTS_COUNT);
+      for (let i = 0; i < POINTS_COUNT; i++) {
+        renderPoint(siteListElement, data[i]);
+      }
+    });
   }
+
 }
