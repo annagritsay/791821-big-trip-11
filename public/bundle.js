@@ -357,13 +357,17 @@ const createEventEditTemplate = (item) => {
 };
 
 class EventEdit extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(filters) {
+  constructor(data) {
     super();
 
-    this._filters = filters;
+    this._data = data;
   }
   getTemplate() {
-    return createEventEditTemplate();
+    return createEventEditTemplate(this._data);
+  }
+  setEditButtonClickSave(handler) {
+    this.getElement().querySelector(`.event__save-btn`)
+      .addEventListener(`click`, handler);
   }
 }
 
@@ -403,13 +407,13 @@ const createFilterTemplate = (items) => {
 };
 
 class Filter extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(data) {
+  constructor(filters) {
     super();
 
-    this._filters = data;
+    this._filters = filters;
   }
   getTemplate() {
-    return createFilterTemplate();
+    return createFilterTemplate(this._filters);
   }
 }
 
@@ -480,13 +484,13 @@ const createSiteMenuTemplate = (it) => {
 };
 
 class Menu extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(filters) {
+  constructor(data) {
     super();
 
-    this._filters = filters;
+    this._data = data;
   }
   getTemplate() {
-    return createSiteMenuTemplate();
+    return createSiteMenuTemplate(this._data);
   }
 }
 
@@ -730,7 +734,11 @@ class Content extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["defau
     this._data = data;
   }
   getTemplate() {
-    return createPointsTemplate();
+    return createPointsTemplate(this._data);
+  }
+  setEditButtonClickRollup(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, handler);
   }
 }
 
@@ -767,13 +775,13 @@ const createCostAndPriceTemplate = () => {
 };
 
 class CostAndPrice extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(filters) {
+  constructor(items) {
     super();
 
-    this._filters = filters;
+    this._items = items;
   }
   getTemplate() {
-    return createCostAndPriceTemplate();
+    return createCostAndPriceTemplate(this._items);
   }
 }
 
@@ -837,6 +845,110 @@ class Sort extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"
 
 /***/ }),
 
+/***/ "./src/controllers/content.js":
+/*!************************************!*\
+  !*** ./src/controllers/content.js ***!
+  \************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ContentController; });
+/* harmony import */ var _components_sort_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/sort.js */ "./src/components/sort.js");
+/* harmony import */ var _components_event_edit_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/event-edit.js */ "./src/components/event-edit.js");
+/* harmony import */ var _components_content_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/content.js */ "./src/components/content.js");
+/* harmony import */ var _components_group_days_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/group-days.js */ "./src/components/group-days.js");
+/* harmony import */ var _components_day_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/day.js */ "./src/components/day.js");
+/* harmony import */ var _components_nopoints_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/nopoints.js */ "./src/components/nopoints.js");
+/* harmony import */ var _components_points_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/points.js */ "./src/components/points.js");
+/* harmony import */ var _utils_render_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/render.js */ "./src/utils/render.js");
+
+
+
+
+
+
+
+
+
+const POINTS_COUNT = 10;
+const Sort = new _components_sort_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
+const Content = new _components_content_js__WEBPACK_IMPORTED_MODULE_2__["default"]();
+const GroupDays = new _components_group_days_js__WEBPACK_IMPORTED_MODULE_3__["default"]();
+const Day = new _components_day_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
+const NoPoints = new _components_nopoints_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
+
+const renderPoint = (list, point) => {
+  const replaceTaskToEdit = () => {
+    Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_7__["replace"])(EventEdit, Points);
+  };
+
+  const replaceEditToTask = () => {
+    Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_7__["replace"])(Points, EventEdit);
+  };
+
+  const onEscKeyDown = (evt) => {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+    if (isEscKey) {
+      replaceEditToTask();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+  const Points = new _components_points_js__WEBPACK_IMPORTED_MODULE_6__["default"](point);
+  Points.setEditButtonClickRollup(() => {
+    replaceTaskToEdit();
+    document.addEventListener(`keydown`, onEscKeyDown);
+  });
+
+  const EventEdit = new _components_event_edit_js__WEBPACK_IMPORTED_MODULE_1__["default"](point);
+  EventEdit.setEditButtonClickSave((evt) => {
+    evt.preventDefault();
+    replaceEditToTask();
+    document.removeEventListener(`keydown`, onEscKeyDown);
+  });
+
+  Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_7__["render"])(list, Points, _utils_render_js__WEBPACK_IMPORTED_MODULE_7__["RenderPosition"].BEFOREEND);
+};
+
+const renderContainer = (contener, points) => {
+  if (points.length === 0) {
+    Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_7__["render"])(contener, NoPoints, _utils_render_js__WEBPACK_IMPORTED_MODULE_7__["RenderPosition"].AFTERBEGIN);
+
+    return;
+  }
+
+  Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_7__["render"])(contener, Sort, _utils_render_js__WEBPACK_IMPORTED_MODULE_7__["RenderPosition"].AFTERBEGIN);
+  Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_7__["render"])(contener, Content, _utils_render_js__WEBPACK_IMPORTED_MODULE_7__["RenderPosition"].BEFOREEND);
+
+  const tripDays = document.querySelector(`.trip-days`);
+  Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_7__["render"])(tripDays, GroupDays, _utils_render_js__WEBPACK_IMPORTED_MODULE_7__["RenderPosition"].BEFOREEND);
+
+  const day = document.querySelector(`.day`);
+  Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_7__["render"])(day, Day, _utils_render_js__WEBPACK_IMPORTED_MODULE_7__["RenderPosition"].BEFOREEND);
+
+  const siteListElement = document.querySelector(`.trip-events__list`);
+  for (let i = 0; i < POINTS_COUNT; i++) {
+    renderPoint(siteListElement, points[i]);
+  }
+};
+
+class ContentController {
+  constructor(container) {
+
+    this._container = container;
+  }
+
+  render(points) {
+
+    renderContainer(this._container, points);
+  }
+}
+
+
+/***/ }),
+
 /***/ "./src/main.js":
 /*!*********************!*\
   !*** ./src/main.js ***!
@@ -849,15 +961,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_site_main_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/site-main.js */ "./src/components/site-main.js");
 /* harmony import */ var _components_menu_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/menu.js */ "./src/components/menu.js");
 /* harmony import */ var _components_filter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/filter.js */ "./src/components/filter.js");
-/* harmony import */ var _components_sort_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/sort.js */ "./src/components/sort.js");
-/* harmony import */ var _components_event_edit_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/event-edit.js */ "./src/components/event-edit.js");
-/* harmony import */ var _components_content_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/content.js */ "./src/components/content.js");
-/* harmony import */ var _components_group_days_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/group-days.js */ "./src/components/group-days.js");
-/* harmony import */ var _components_day_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/day.js */ "./src/components/day.js");
-/* harmony import */ var _components_nopoints_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/nopoints.js */ "./src/components/nopoints.js");
-/* harmony import */ var _components_points_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/points.js */ "./src/components/points.js");
-/* harmony import */ var _utils_render_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./utils/render.js */ "./src/utils/render.js");
-/* harmony import */ var _components_mocks_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./components/mocks.js */ "./src/components/mocks.js");
+/* harmony import */ var _utils_render_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils/render.js */ "./src/utils/render.js");
+/* harmony import */ var _components_mocks_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/mocks.js */ "./src/components/mocks.js");
+/* harmony import */ var _controllers_content_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./controllers/content.js */ "./src/controllers/content.js");
 
 
 
@@ -865,92 +971,21 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-
-
-
-
-
-const POINTS_COUNT = 10;
-
-const Menu = new _components_menu_js__WEBPACK_IMPORTED_MODULE_1__["default"](_components_mocks_js__WEBPACK_IMPORTED_MODULE_11__["menuItems"]);
+const Menu = new _components_menu_js__WEBPACK_IMPORTED_MODULE_1__["default"](_components_mocks_js__WEBPACK_IMPORTED_MODULE_4__["menuItems"]);
 const CostAndPrice = new _components_site_main_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
-const Filter = new _components_filter_js__WEBPACK_IMPORTED_MODULE_2__["default"](_components_mocks_js__WEBPACK_IMPORTED_MODULE_11__["filters"]);
-const Sort = new _components_sort_js__WEBPACK_IMPORTED_MODULE_3__["default"]();
-const Content = new _components_content_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
-const GroupDays = new _components_group_days_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
-const Day = new _components_day_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
-const NoPoints = new _components_nopoints_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
+const Filter = new _components_filter_js__WEBPACK_IMPORTED_MODULE_2__["default"](_components_mocks_js__WEBPACK_IMPORTED_MODULE_4__["filters"]);
+const Content = new _controllers_content_js__WEBPACK_IMPORTED_MODULE_5__["default"](Content);
 
+const tripEventsElement = document.querySelector(`.trip-events`);
 const siteMainElement = document.querySelector(`.trip-main`);
 const tripControlsElement = document.querySelector(`.trip-controls`);
 const siteMenuElement = document.querySelector(`.trip-controls .visually-hidden`);
 
-Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_10__["render"])(siteMainElement, CostAndPrice, _utils_render_js__WEBPACK_IMPORTED_MODULE_10__["RenderPosition"].AFTERBEGIN);
-Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_10__["render"])(tripControlsElement, Filter, _utils_render_js__WEBPACK_IMPORTED_MODULE_10__["RenderPosition"].BEFOREEND);
-Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_10__["render"])(siteMenuElement, Menu, _utils_render_js__WEBPACK_IMPORTED_MODULE_10__["RenderPosition"].AFTERBEGIN);
-
-const renderPoint = (list, point) => {
-  const replaceTaskToEdit = () => {
-    Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_10__["replace"])(list, EventEdit, Points);
-  };
-
-  const replaceEditToTask = () => {
-    Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_10__["replace"])(list, Points, EventEdit);
-  };
-
-  const onEscKeyDown = (evt) => {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-    if (isEscKey) {
-      replaceEditToTask();
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    }
-  };
-
-  const Points = new _components_points_js__WEBPACK_IMPORTED_MODULE_9__["default"](point);
-  const editButton = Points.querySelector(`.event__rollup-btn`);
-  editButton.addEventListener(`click`, () => {
-    replaceTaskToEdit();
-    document.addEventListener(`keydown`, onEscKeyDown);
-  });
-
-  const EventEdit = new _components_event_edit_js__WEBPACK_IMPORTED_MODULE_4__["default"](point);
-  const editForm = EventEdit.querySelector(`.event__save-btn`);
-  editForm.addEventListener(`submit`, (evt) => {
-    evt.preventDefault();
-    replaceEditToTask();
-    document.removeEventListener(`keydown`, onEscKeyDown);
-  });
-
-  Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_10__["render"])(list, Points, _utils_render_js__WEBPACK_IMPORTED_MODULE_10__["RenderPosition"].BEFOREEND);
-};
-
-const tripEventsElement = document.querySelector(`.trip-events`);
-
-const renderContainer = () => {
-
-  if (_components_mocks_js__WEBPACK_IMPORTED_MODULE_11__["points"].length === 0) {
-    Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_10__["render"])(tripEventsElement, NoPoints, _utils_render_js__WEBPACK_IMPORTED_MODULE_10__["RenderPosition"].AFTERBEGIN);
-
-    return;
-  }
-
-  Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_10__["render"])(tripEventsElement, Sort, _utils_render_js__WEBPACK_IMPORTED_MODULE_10__["RenderPosition"].AFTERBEGIN);
-  Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_10__["render"])(tripEventsElement, Content, _utils_render_js__WEBPACK_IMPORTED_MODULE_10__["RenderPosition"].BEFOREEND);
-
-  const tripDays = document.querySelector(`.trip-days`);
-  Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_10__["render"])(tripDays, GroupDays, _utils_render_js__WEBPACK_IMPORTED_MODULE_10__["RenderPosition"].BEFOREEND);
-
-  const day = document.querySelector(`.day`);
-  Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_10__["render"])(day, Day, _utils_render_js__WEBPACK_IMPORTED_MODULE_10__["RenderPosition"].BEFOREEND);
-
-  const siteListElement = document.querySelector(`.trip-events__list`);
-  for (let i = 0; i < POINTS_COUNT; i++) {
-    renderPoint(siteListElement, _components_mocks_js__WEBPACK_IMPORTED_MODULE_11__["points"][i]);
-  }
-};
-renderContainer();
+Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_3__["render"])(siteMainElement, CostAndPrice, _utils_render_js__WEBPACK_IMPORTED_MODULE_3__["RenderPosition"].AFTERBEGIN);
+Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_3__["render"])(tripControlsElement, Filter, _utils_render_js__WEBPACK_IMPORTED_MODULE_3__["RenderPosition"].BEFOREEND);
+Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_3__["render"])(siteMenuElement, Menu, _utils_render_js__WEBPACK_IMPORTED_MODULE_3__["RenderPosition"].AFTERBEGIN);
+Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_3__["render"])(siteMainElement, Content, _utils_render_js__WEBPACK_IMPORTED_MODULE_3__["RenderPosition"].BEFOREEND);
+Content.render(tripEventsElement, _components_mocks_js__WEBPACK_IMPORTED_MODULE_4__["points"]);
 
 
 /***/ }),
@@ -990,12 +1025,21 @@ const render = (container, component, place) => {
   }
 };
 
-const replace = (parent, newElement, oldElement) => {
-  parent.replaceChild(newElement, oldElement);
+const replace = (newComponent, oldComponent) => {
+  const parentElement = oldComponent.getElement().parentElement;
+  const newElement = newComponent.getElement();
+  const oldElement = oldComponent.getElement();
+
+  const isExistElements = !!(parentElement && newElement && oldElement);
+
+  if (isExistElements && parentElement.contains(oldElement)) {
+    parentElement.replaceChild(newElement, oldElement);
+  }
 };
 
-const remove = (element) => {
-  element.remove();
+const remove = (component) => {
+  component.getElement().remove();
+  component.removeElement();
 };
 
 
