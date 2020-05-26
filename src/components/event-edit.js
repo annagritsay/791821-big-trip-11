@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import AbstractComponent from "./abstract-component.js";
 
 export const createEventEditTemplate = (item) => {
   return (
@@ -156,26 +156,17 @@ export const createEventEditTemplate = (item) => {
   );
 };
 
-export default class EventEdit {
-  constructor(items) {
-    this._data = items;
+export default class EventEdit extends AbstractComponent {
+  constructor(data) {
+    super();
 
-    this._element = null;
+    this._data = data;
   }
-
   getTemplate() {
     return createEventEditTemplate(this._data);
   }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setEditButtonClickSave(handler) {
+    this.getElement().querySelector(`.event__save-btn`)
+      .addEventListener(`click`, handler);
   }
 }

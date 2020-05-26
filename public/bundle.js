@@ -86,40 +86,102 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/components/content.js":
-/*!***********************************!*\
-  !*** ./src/components/content.js ***!
-  \***********************************/
-/*! exports provided: renderContentTemplate */
+/***/ "./src/components/abstract-component.js":
+/*!**********************************************!*\
+  !*** ./src/components/abstract-component.js ***!
+  \**********************************************/
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderContentTemplate", function() { return renderContentTemplate; });
-/* harmony import */ var _render_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./render.js */ "./src/components/render.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AbstractComponent; });
+/* harmony import */ var _utils_render_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/render.js */ "./src/utils/render.js");
 
 
-const createContentTemplate = () => {
+class AbstractComponent {
+  constructor() {
+    if (new.target === AbstractComponent) {
+      throw new Error(`Can't instantiate AbstractComponent, only concrete one.`);
+    }
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    throw new Error(`Abstract method not implemented: getTemplate`);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_0__["createElement"])(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/components/content.js":
+/*!***********************************!*\
+  !*** ./src/components/content.js ***!
+  \***********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Content; });
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
+
+
+const createAllDaysTemplate = () => {
   return (
     `<ul class="trip-days">
-        <li class="trip-days__item  day">
-          <div class="day__info">
-            <span class="day__counter">1</span>
-            <time class="day__date" datetime="2019-03-18">MAR 18</time>
-          </div>
-          <ul class="trip-events__list">
-          </ul>
-        </li>
       </ul>`
   );
 };
 
-const renderContentTemplate = () => {
-  const tripEventsElement = document.querySelector(`.trip-events`);
-  Object(_render_js__WEBPACK_IMPORTED_MODULE_0__["render"])(tripEventsElement, createContentTemplate(), `beforeend`);
+class Content extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  getTemplate() {
+    return createAllDaysTemplate();
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/components/day.js":
+/*!*******************************!*\
+  !*** ./src/components/day.js ***!
+  \*******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Day; });
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
+
+
+const createDayTemplate = () => {
+  return (
+    `<ul class="trip-events__list">
+    </ul>`
+  );
 };
 
-
+class Day extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  getTemplate() {
+    return createDayTemplate();
+  }
+}
 
 
 /***/ }),
@@ -128,16 +190,14 @@ const renderContentTemplate = () => {
 /*!**************************************!*\
   !*** ./src/components/event-edit.js ***!
   \**************************************/
-/*! exports provided: createEventEditTemplate, renderEventEditTemplate */
+/*! exports provided: createEventEditTemplate, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createEventEditTemplate", function() { return createEventEditTemplate; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderEventEditTemplate", function() { return renderEventEditTemplate; });
-/* harmony import */ var _render_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./render.js */ "./src/components/render.js");
-/* harmony import */ var _mocks_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mocks.js */ "./src/components/mocks.js");
-
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EventEdit; });
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
 
 
 const createEventEditTemplate = (item) => {
@@ -203,7 +263,7 @@ const createEventEditTemplate = (item) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             Flight to
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Geneva" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${item.town}" list="destination-list-1">
           <datalist id="destination-list-1">
             <option value="Amsterdam"></option>
             <option value="Geneva"></option>
@@ -296,12 +356,20 @@ const createEventEditTemplate = (item) => {
   );
 };
 
-const renderEventEditTemplate = () => {
-  const siteMainElement = document.querySelector(`.trip-main`);
-  Object(_render_js__WEBPACK_IMPORTED_MODULE_0__["render"])(siteMainElement, createEventEditTemplate(_mocks_js__WEBPACK_IMPORTED_MODULE_1__["points"][0]), `afterbegin`);
-};
+class EventEdit extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor(data) {
+    super();
 
-
+    this._data = data;
+  }
+  getTemplate() {
+    return createEventEditTemplate(this._data);
+  }
+  setEditButtonClickSave(handler) {
+    this.getElement().querySelector(`.event__save-btn`)
+      .addEventListener(`click`, handler);
+  }
+}
 
 
 /***/ }),
@@ -310,18 +378,17 @@ const renderEventEditTemplate = () => {
 /*!**********************************!*\
   !*** ./src/components/filter.js ***!
   \**********************************/
-/*! exports provided: renderFilterTemplate */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderFilterTemplate", function() { return renderFilterTemplate; });
-/* harmony import */ var _render_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./render.js */ "./src/components/render.js");
-/* harmony import */ var _mocks_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mocks.js */ "./src/components/mocks.js");
-
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Filter; });
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
 
 
 const createFilterTemplate = (items) => {
+
   const filter = items.reduce((acc, element) => {
     return (
       `${acc}
@@ -339,12 +406,54 @@ const createFilterTemplate = (items) => {
   );
 };
 
-const renderFilterTemplate = () => {
-  const tripControlsElement = document.querySelector(`.trip-controls`);
-  Object(_render_js__WEBPACK_IMPORTED_MODULE_0__["render"])(tripControlsElement, createFilterTemplate(_mocks_js__WEBPACK_IMPORTED_MODULE_1__["filters"]), `beforeend`);
+class Filter extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor(filters) {
+    super();
+
+    this._filters = filters;
+  }
+  getTemplate() {
+    return createFilterTemplate(this._filters);
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/components/group-days.js":
+/*!**************************************!*\
+  !*** ./src/components/group-days.js ***!
+  \**************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return GroupDays; });
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
+
+
+const createGroupDaysTemplate = () => {
+  return (
+    `<li class="trip-days__item  day">
+      <div class="day__info">
+        <span class="day__counter">1</span>
+        <time class="day__date" datetime="2019-03-18">MAR 18</time>
+      </div>
+    </li>`
+  );
 };
 
+class GroupDays extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor(filters) {
+    super();
 
+    this._filters = filters;
+  }
+  getTemplate() {
+    return createGroupDaysTemplate();
+  }
+}
 
 
 /***/ }),
@@ -359,7 +468,7 @@ const renderFilterTemplate = () => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Menu; });
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils.js */ "./src/utils.js");
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
 
 
 const createSiteMenuTemplate = (it) => {
@@ -374,27 +483,14 @@ const createSiteMenuTemplate = (it) => {
   );
 };
 
-class Menu {
-  constructor(items) {
-    this._data = items;
+class Menu extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor(data) {
+    super();
 
-    this._element = null;
+    this._data = data;
   }
-
   getTemplate() {
     return createSiteMenuTemplate(this._data);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["createElement"])(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 
@@ -547,22 +643,49 @@ const filters = [
 
 
 
+
+/***/ }),
+
+/***/ "./src/components/nopoints.js":
+/*!************************************!*\
+  !*** ./src/components/nopoints.js ***!
+  \************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return NoPoints; });
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
+
+
+const createNoPointsTemplate = () => {
+  return (
+    `<p class="trip-events__msg">Click New Event to create your first point</p>`
+  );
+};
+
+class NoPoints extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  getTemplate() {
+    return createNoPointsTemplate();
+  }
+}
+
+
 /***/ }),
 
 /***/ "./src/components/points.js":
 /*!**********************************!*\
   !*** ./src/components/points.js ***!
   \**********************************/
-/*! exports provided: createPointsTemplate, renderPointsTemplate */
+/*! exports provided: createPointsTemplate, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createPointsTemplate", function() { return createPointsTemplate; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderPointsTemplate", function() { return renderPointsTemplate; });
-/* harmony import */ var _render_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./render.js */ "./src/components/render.js");
-/* harmony import */ var _mocks_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mocks.js */ "./src/components/mocks.js");
-
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Content; });
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
 
 
 const createPointsTemplate = (item) => {
@@ -604,51 +727,35 @@ const createPointsTemplate = (item) => {
     </li>`
   );
 };
-const POINTS_COUNT = 10;
-const renderPointsTemplate = () => {
-  const siteListElement = document.querySelector(`.trip-events__list`);
-  for (let i = 0; i < POINTS_COUNT; i++) {
-    Object(_render_js__WEBPACK_IMPORTED_MODULE_0__["render"])(siteListElement, createPointsTemplate(_mocks_js__WEBPACK_IMPORTED_MODULE_1__["points"][i]), `beforeend`);
+class Content extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor(data) {
+    super();
+
+    this._data = data;
   }
-};
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./src/components/render.js":
-/*!**********************************!*\
-  !*** ./src/components/render.js ***!
-  \**********************************/
-/*! exports provided: render */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
-
-
+  getTemplate() {
+    return createPointsTemplate(this._data);
+  }
+  setEditButtonClickRollup(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, handler);
+  }
+}
 
 
 /***/ }),
 
-/***/ "./src/components/siteMain.js":
-/*!************************************!*\
-  !*** ./src/components/siteMain.js ***!
-  \************************************/
-/*! exports provided: renderCostAndPriceTemplate */
+/***/ "./src/components/site-main.js":
+/*!*************************************!*\
+  !*** ./src/components/site-main.js ***!
+  \*************************************/
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderCostAndPriceTemplate", function() { return renderCostAndPriceTemplate; });
-/* harmony import */ var _render_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./render.js */ "./src/components/render.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return CostAndPrice; });
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
 
 
 const createCostAndPriceTemplate = () => {
@@ -667,12 +774,16 @@ const createCostAndPriceTemplate = () => {
   );
 };
 
-const renderCostAndPriceTemplate = () => {
-  const siteMainElement = document.querySelector(`.trip-main`);
-  Object(_render_js__WEBPACK_IMPORTED_MODULE_0__["render"])(siteMainElement, createCostAndPriceTemplate(), `afterbegin`);
-};
+class CostAndPrice extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor(items) {
+    super();
 
-
+    this._items = items;
+  }
+  getTemplate() {
+    return createCostAndPriceTemplate(this._items);
+  }
+}
 
 
 /***/ }),
@@ -681,13 +792,13 @@ const renderCostAndPriceTemplate = () => {
 /*!********************************!*\
   !*** ./src/components/sort.js ***!
   \********************************/
-/*! exports provided: renderSortTemplate */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderSortTemplate", function() { return renderSortTemplate; });
-/* harmony import */ var _render_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./render.js */ "./src/components/render.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Sort; });
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
 
 
 const createSortTemplate = () => {
@@ -725,12 +836,115 @@ const createSortTemplate = () => {
   );
 };
 
-const renderSortTemplate = () => {
-  const tripEventsElement = document.querySelector(`.trip-events`);
-  Object(_render_js__WEBPACK_IMPORTED_MODULE_0__["render"])(tripEventsElement, createSortTemplate(), `beforeend`);
+class Sort extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  getTemplate() {
+    return createSortTemplate();
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/controllers/content.js":
+/*!************************************!*\
+  !*** ./src/controllers/content.js ***!
+  \************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ContentController; });
+/* harmony import */ var _components_sort_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/sort.js */ "./src/components/sort.js");
+/* harmony import */ var _components_event_edit_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/event-edit.js */ "./src/components/event-edit.js");
+/* harmony import */ var _components_content_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/content.js */ "./src/components/content.js");
+/* harmony import */ var _components_group_days_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/group-days.js */ "./src/components/group-days.js");
+/* harmony import */ var _components_day_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/day.js */ "./src/components/day.js");
+/* harmony import */ var _components_nopoints_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/nopoints.js */ "./src/components/nopoints.js");
+/* harmony import */ var _components_points_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/points.js */ "./src/components/points.js");
+/* harmony import */ var _utils_render_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/render.js */ "./src/utils/render.js");
+
+
+
+
+
+
+
+
+
+const POINTS_COUNT = 10;
+const Sort = new _components_sort_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
+const Content = new _components_content_js__WEBPACK_IMPORTED_MODULE_2__["default"]();
+const GroupDays = new _components_group_days_js__WEBPACK_IMPORTED_MODULE_3__["default"]();
+const Day = new _components_day_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
+const NoPoints = new _components_nopoints_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
+
+const renderPoint = (list, point) => {
+  const replaceTaskToEdit = () => {
+    Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_7__["replace"])(EventEdit, Points);
+  };
+
+  const replaceEditToTask = () => {
+    Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_7__["replace"])(Points, EventEdit);
+  };
+
+  const onEscKeyDown = (evt) => {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+    if (isEscKey) {
+      replaceEditToTask();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+  const Points = new _components_points_js__WEBPACK_IMPORTED_MODULE_6__["default"](point);
+  Points.setEditButtonClickRollup(() => {
+    replaceTaskToEdit();
+    document.addEventListener(`keydown`, onEscKeyDown);
+  });
+
+  const EventEdit = new _components_event_edit_js__WEBPACK_IMPORTED_MODULE_1__["default"](point);
+  EventEdit.setEditButtonClickSave((evt) => {
+    evt.preventDefault();
+    replaceEditToTask();
+    document.removeEventListener(`keydown`, onEscKeyDown);
+  });
+
+  Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_7__["render"])(list, Points, _utils_render_js__WEBPACK_IMPORTED_MODULE_7__["RenderPosition"].BEFOREEND);
 };
 
+const renderContainer = (contener, points) => {
+  if (points.length === 0) {
+    Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_7__["render"])(contener, NoPoints, _utils_render_js__WEBPACK_IMPORTED_MODULE_7__["RenderPosition"].AFTERBEGIN);
 
+    return;
+  }
+
+  Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_7__["render"])(contener, Sort, _utils_render_js__WEBPACK_IMPORTED_MODULE_7__["RenderPosition"].AFTERBEGIN);
+  Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_7__["render"])(contener, Content, _utils_render_js__WEBPACK_IMPORTED_MODULE_7__["RenderPosition"].BEFOREEND);
+
+  const tripDays = document.querySelector(`.trip-days`);
+  Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_7__["render"])(tripDays, GroupDays, _utils_render_js__WEBPACK_IMPORTED_MODULE_7__["RenderPosition"].BEFOREEND);
+
+  const day = document.querySelector(`.day`);
+  Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_7__["render"])(day, Day, _utils_render_js__WEBPACK_IMPORTED_MODULE_7__["RenderPosition"].BEFOREEND);
+
+  const siteListElement = document.querySelector(`.trip-events__list`);
+  for (let i = 0; i < POINTS_COUNT; i++) {
+    renderPoint(siteListElement, points[i]);
+  }
+};
+
+class ContentController {
+  constructor(container) {
+
+    this._container = container;
+  }
+
+  render(points) {
+
+    renderContainer(this._container, points);
+  }
+}
 
 
 /***/ }),
@@ -744,15 +958,12 @@ const renderSortTemplate = () => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _components_siteMain_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/siteMain.js */ "./src/components/siteMain.js");
+/* harmony import */ var _components_site_main_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/site-main.js */ "./src/components/site-main.js");
 /* harmony import */ var _components_menu_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/menu.js */ "./src/components/menu.js");
 /* harmony import */ var _components_filter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/filter.js */ "./src/components/filter.js");
-/* harmony import */ var _components_sort_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/sort.js */ "./src/components/sort.js");
-/* harmony import */ var _components_event_edit_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/event-edit.js */ "./src/components/event-edit.js");
-/* harmony import */ var _components_content_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/content.js */ "./src/components/content.js");
-/* harmony import */ var _components_points_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/points.js */ "./src/components/points.js");
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils.js */ "./src/utils.js");
-/* harmony import */ var _components_mocks_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/mocks.js */ "./src/components/mocks.js");
+/* harmony import */ var _utils_render_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils/render.js */ "./src/utils/render.js");
+/* harmony import */ var _components_mocks_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/mocks.js */ "./src/components/mocks.js");
+/* harmony import */ var _controllers_content_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./controllers/content.js */ "./src/controllers/content.js");
 
 
 
@@ -760,29 +971,30 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+const Menu = new _components_menu_js__WEBPACK_IMPORTED_MODULE_1__["default"](_components_mocks_js__WEBPACK_IMPORTED_MODULE_4__["menuItems"]);
+const CostAndPrice = new _components_site_main_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
+const Filter = new _components_filter_js__WEBPACK_IMPORTED_MODULE_2__["default"](_components_mocks_js__WEBPACK_IMPORTED_MODULE_4__["filters"]);
+const Content = new _controllers_content_js__WEBPACK_IMPORTED_MODULE_5__["default"](Content);
 
-
-
-Object(_components_siteMain_js__WEBPACK_IMPORTED_MODULE_0__["renderCostAndPriceTemplate"])();
-Object(_components_filter_js__WEBPACK_IMPORTED_MODULE_2__["renderFilterTemplate"])();
-Object(_components_sort_js__WEBPACK_IMPORTED_MODULE_3__["renderSortTemplate"])();
-Object(_components_event_edit_js__WEBPACK_IMPORTED_MODULE_4__["renderEventEditTemplate"])();
-Object(_components_content_js__WEBPACK_IMPORTED_MODULE_5__["renderContentTemplate"])();
-Object(_components_points_js__WEBPACK_IMPORTED_MODULE_6__["renderPointsTemplate"])();
-
-const Menu = new _components_menu_js__WEBPACK_IMPORTED_MODULE_1__["default"](_components_mocks_js__WEBPACK_IMPORTED_MODULE_8__["menuItems"]);
+const tripEventsElement = document.querySelector(`.trip-events`);
+const siteMainElement = document.querySelector(`.trip-main`);
+const tripControlsElement = document.querySelector(`.trip-controls`);
 const siteMenuElement = document.querySelector(`.trip-controls .visually-hidden`);
-Object(_utils_js__WEBPACK_IMPORTED_MODULE_7__["render"])(siteMenuElement, Menu.getElement(), _utils_js__WEBPACK_IMPORTED_MODULE_7__["RenderPosition"].AFTERBEGIN);
 
+Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_3__["render"])(siteMainElement, CostAndPrice, _utils_render_js__WEBPACK_IMPORTED_MODULE_3__["RenderPosition"].AFTERBEGIN);
+Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_3__["render"])(tripControlsElement, Filter, _utils_render_js__WEBPACK_IMPORTED_MODULE_3__["RenderPosition"].BEFOREEND);
+Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_3__["render"])(siteMenuElement, Menu, _utils_render_js__WEBPACK_IMPORTED_MODULE_3__["RenderPosition"].AFTERBEGIN);
+Object(_utils_render_js__WEBPACK_IMPORTED_MODULE_3__["render"])(siteMainElement, Content, _utils_render_js__WEBPACK_IMPORTED_MODULE_3__["RenderPosition"].BEFOREEND);
+Content.render(tripEventsElement, _components_mocks_js__WEBPACK_IMPORTED_MODULE_4__["points"]);
 
 
 /***/ }),
 
-/***/ "./src/utils.js":
-/*!**********************!*\
-  !*** ./src/utils.js ***!
-  \**********************/
-/*! exports provided: createElement, RenderPosition, render */
+/***/ "./src/utils/render.js":
+/*!*****************************!*\
+  !*** ./src/utils/render.js ***!
+  \*****************************/
+/*! exports provided: createElement, RenderPosition, render, replace, remove */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -790,6 +1002,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createElement", function() { return createElement; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RenderPosition", function() { return RenderPosition; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "replace", function() { return replace; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "remove", function() { return remove; });
 const createElement = (template) => {
   const newElement = document.createElement(`div`);
   newElement.innerHTML = template;
@@ -800,15 +1014,32 @@ const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
   BEFOREEND: `beforeend`,
 };
-const render = (container, element, place) => {
+const render = (container, component, place) => {
   switch (place) {
     case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
+      container.prepend(component.getElement());
       break;
     case RenderPosition.BEFOREEND:
-      container.append(element);
+      container.append(component.getElement());
       break;
   }
+};
+
+const replace = (newComponent, oldComponent) => {
+  const parentElement = oldComponent.getElement().parentElement;
+  const newElement = newComponent.getElement();
+  const oldElement = oldComponent.getElement();
+
+  const isExistElements = !!(parentElement && newElement && oldElement);
+
+  if (isExistElements && parentElement.contains(oldElement)) {
+    parentElement.replaceChild(newElement, oldElement);
+  }
+};
+
+const remove = (component) => {
+  component.getElement().remove();
+  component.removeElement();
 };
 
 
