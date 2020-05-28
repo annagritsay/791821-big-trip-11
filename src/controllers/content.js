@@ -7,8 +7,7 @@ import NoPointsComponent from '../components/nopoints.js';
 import PointsComponent from '../components/points.js';
 import {render, replace, RenderPosition} from "../utils/render.js";
 
-const POINTS_COUNT = 10;
-
+let POINTS_COUNT = 10;
 
 const renderPoint = (list, point) => {
   const replaceTaskToEdit = () => {
@@ -45,6 +44,7 @@ const renderPoint = (list, point) => {
 
 const getSortedTasks = (tasks, sortType, from, to) => {
   let sortedTasks = [];
+
   const showingTasks = tasks.slice();
 
   switch (sortType) {
@@ -52,13 +52,12 @@ const getSortedTasks = (tasks, sortType, from, to) => {
       sortedTasks = showingTasks.sort((a, b) => a.dueDate - b.dueDate);
       break;
     case SortType.PRICE:
-      sortedTasks = showingTasks.sort((a, b) => b.dueDate - a.dueDate);
+      sortedTasks = showingTasks.sort((a, b) => a.price - b.price);
       break;
     case SortType.EVENT:
       sortedTasks = showingTasks;
       break;
   }
-
   return sortedTasks.slice(from, to);
 };
 
@@ -96,12 +95,12 @@ export default class ContentController {
     }
 
     this._Sort.setSortTypeChangeHandler((sortType) => {
-      const sortedTasks = getSortedTasks(data, sortType, 0, POINTS_COUNT);
+      let showingTasksCount = POINTS_COUNT;
+      const sortedTasks = getSortedTasks(data, sortType, 0, showingTasksCount);
       siteListElement.innerHTML = ``;
-      sortedTasks.slice(0, POINTS_COUNT);
-      for (let i = 0; i < POINTS_COUNT; i++) {
-        renderPoint(siteListElement, data[i]);
-      }
+      sortedTasks.forEach((task) => {
+        renderPoint(siteListElement, task);
+      });
     });
   }
 

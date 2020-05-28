@@ -1,6 +1,18 @@
 const getRandomNumber = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
+const getRandomIntegerNumber = (min, max) => {
+  return min + Math.floor(Math.random() * (max - min));
+};
+const getRandomDate = () => {
+  const targetDate = new Date();
+  const sign = Math.random() > 0.5 ? 1 : -1;
+  const diffValue = sign * getRandomIntegerNumber(0, 8);
+
+  targetDate.setDate(targetDate.getDate() + diffValue);
+
+  return targetDate;
+};
 const months = [
   `Jan`,
   `Feb`,
@@ -87,6 +99,8 @@ const offers = [
 ];
 const citys = [`Москва`, `Питер`, `Сочи`];
 const generatePoint = () => {
+  const dueDate = Math.random() > 0.5 ? null : getRandomDate();
+
   return {
     type: types[getRandomNumber(0, types.length - 1)],
     town: citys[getRandomNumber(0, citys.length - 1)],
@@ -94,17 +108,14 @@ const generatePoint = () => {
     description: getDescriptions(),
     pictures: getPictures(),
     price: getRandomNumber(0, MAX_PRICE),
+    dueDate,
     day: getDate(),
     time: getTime(),
   };
 };
-const generatePoints = (count) => {
-  let pointsElements = [];
-  for (let i = 0; i < count; i++) {
-    pointsElements.push(generatePoint());
-  }
 
-  return pointsElements;
+const generatePoints = (count) => {
+  return new Array(count).fill(``).map(generatePoint);
 };
 const CARDS_COUNT = 12;
 const points = generatePoints(CARDS_COUNT);
@@ -129,5 +140,5 @@ const filters = [
     name: `Past`,
   },
 ];
-
+export {generatePoint, generatePoints};
 export {points, menuItems, filters};
