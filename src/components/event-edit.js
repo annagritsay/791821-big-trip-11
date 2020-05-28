@@ -172,6 +172,15 @@ export default class EventEdit extends AbstractSmartComponent {
 
     this._subscribeOnEvents();
   }
+  reset() {
+    const data = this._data;
+
+    this._isDateShowing = !!data.dueDate;
+    this._isRepeatingTask = Object.values(data.repeatingDays).some(Boolean);
+    this._activeRepeatingDays = Object.assign({}, data.repeatingDays);
+
+    this.rerender();
+  }
   getTemplate() {
     return createEventEditTemplate(this._data, {
       isDateShowing: this._isDateShowing,
@@ -180,7 +189,7 @@ export default class EventEdit extends AbstractSmartComponent {
     });
   }
   recoveryListeners() {
-    this.setSubmitHandler(this._submitHandler);
+    this.setEditButtonClickSave(this._submitHandler);
     this._subscribeOnEvents();
   }
 

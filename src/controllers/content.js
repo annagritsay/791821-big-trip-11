@@ -10,9 +10,9 @@ const SHOWING_TASKS_COUNT_ON_START = 8;
 
 // const SHOWING_TASKS_COUNT_BY_BUTTON = 8;
 
-const renderPoints = (taskListElement, data, onDataChange) => {
+const renderPoints = (taskListElement, data, onDataChange, onViewChange) => {
   return data.map((item) => {
-    const taskController = new PointController(taskListElement, onDataChange);
+    const taskController = new PointController(taskListElement, onDataChange, onViewChange);
     taskController.render(item);
 
     return taskController;
@@ -50,6 +50,7 @@ export default class ContentController {
     this._GroupDays = new GroupDaysComponent();
     this._Day = new DayComponent();
     this._NoPoints = new NoPointsComponent();
+    this._onViewChange = this._onViewChange.bind(this);
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
@@ -75,7 +76,7 @@ export default class ContentController {
     render(day, this._Day, RenderPosition.BEFOREEND);
     const siteListElement = document.querySelector(`.trip-events__list`);
 
-    const newTasks = renderPoints(siteListElement, this._data.slice(0, this._showingTasksCount), this._onDataChange);
+    const newTasks = renderPoints(siteListElement, this._data.slice(0, this._showingTasksCount), this._onDataChange, this._onViewChange);
     this._showedTaskControllers = this._showedTaskControllers.concat(newTasks);
   }
   _onDataChange(taskController, oldData, newData) {
@@ -90,6 +91,10 @@ export default class ContentController {
     taskController.render(this._data[index]);
   }
 
+  _onViewChange() {
+    this._showedTaskControllers.forEach((it) => it.setDefaultView());
+  }
+
   _onSortTypeChange(sortType) {
     this._showingTasksCount = SHOWING_TASKS_COUNT_ON_START;
 
@@ -97,7 +102,7 @@ export default class ContentController {
     const siteListElement = document.querySelector(`.trip-events__list`);
     siteListElement.innerHTML = ``;
 
-    const newTasks = renderPoints(siteListElement, sortedTasks, this._onDataChange);
+    const newTasks = renderPoints(siteListElement, sortedTasks, this._onDataChange, this._onViewChange);
     this._showedTaskControllers = newTasks;
   }
 }
