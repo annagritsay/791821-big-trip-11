@@ -4,53 +4,20 @@ import GroupDaysComponent from '../components/group-days.js';
 import DayComponent from '../components/day.js';
 import NoPointsComponent from '../components/nopoints.js';
 import PointController from "./point.js";
-import {render, replace, RenderPosition} from "../utils/render.js";
+import {render, RenderPosition} from "../utils/render.js";
 
 const SHOWING_TASKS_COUNT_ON_START = 8;
-const SHOWING_TASKS_COUNT_BY_BUTTON = 8;
+//const SHOWING_TASKS_COUNT_BY_BUTTON = 8;
 
 
 const renderPoints = (taskListElement, data, onDataChange) => {
   return data.map((item) => {
     const taskController = new PointController(taskListElement, onDataChange);
     taskController.render(item);
-    console.log(taskController);
+
     return taskController;
   });
 };
-
-// const renderPoint = (list, point) => {
-//   const replaceTaskToEdit = () => {
-//     replace(EventEdit, Points);
-//   };
-
-//   const replaceEditToTask = () => {
-//     replace(Points, EventEdit);
-//   };
-
-//   const onEscKeyDown = (evt) => {
-//     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-//     if (isEscKey) {
-//       replaceEditToTask();
-//       document.removeEventListener(`keydown`, onEscKeyDown);
-//     }
-//   };
-//   const Points = new PointsComponent(point);
-//   Points.setEditButtonClickRollup(() => {
-//     replaceTaskToEdit();
-//     document.addEventListener(`keydown`, onEscKeyDown);
-//   });
-
-//   const EventEdit = new EventEditComponent(point);
-//   EventEdit.setEditButtonClickSave((evt) => {
-//     evt.preventDefault();
-//     replaceEditToTask();
-//     document.removeEventListener(`keydown`, onEscKeyDown);
-//   });
-
-//   render(list, Points, RenderPosition.BEFOREEND);
-// };
 
 const getSortedPoints = (data, sortType, from, to) => {
   let sortedPoints = [];
@@ -133,18 +100,4 @@ export default class ContentController {
     const newTasks = renderPoints(siteListElement, sortedTasks, this._onDataChange);
     this._showedTaskControllers = newTasks;
   }
-
-
-
-
-  //   this._Sort.setSortTypeChangeHandler((sortType) => {
-  //     let showingTasksCount = POINTS_COUNT;
-  //     const sortedTasks = getSortedTasks(data, sortType, 0, showingTasksCount);
-  //     siteListElement.innerHTML = ``;
-  //     sortedTasks.forEach((task) => {
-  //       renderPoint(siteListElement, task);
-  //     });
-  //   });
-  // }
-
 }

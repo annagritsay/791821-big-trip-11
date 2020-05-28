@@ -1,7 +1,7 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
-const isRepeating = (repeatingDays) => {
-  return Object.values(repeatingDays).some(Boolean);
-};
+// const isRepeating = (repeatingDays) => {
+//   return Object.values(repeatingDays).some(Boolean);
+// };
 
 export const createEventEditTemplate = (item) => {
   return (
