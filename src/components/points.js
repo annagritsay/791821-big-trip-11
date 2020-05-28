@@ -39,7 +39,7 @@ export const createPointsTemplate = (item) => {
     </li>`
   );
 };
-export default class Content extends AbstractComponent {
+export default class PointComponent extends AbstractComponent {
   constructor(data) {
     super();
 
@@ -50,6 +50,15 @@ export default class Content extends AbstractComponent {
   }
   setEditButtonClickRollup(handler) {
     this.getElement().querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, handler);
+  }
+  setFavoritesButtonClickHandler(handler) {
+    this.getElement().querySelector(`.card__btn--favorites`)
+      .addEventListener(`click`, handler);
+  }
+
+  setArchiveButtonClickHandler(handler) {
+    this.getElement().querySelector(`.card__btn--archive`)
       .addEventListener(`click`, handler);
   }
 }

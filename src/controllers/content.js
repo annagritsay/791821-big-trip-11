@@ -1,87 +1,71 @@
 import SortComponent, {SortType} from '../components/sort.js';
-import EventEditComponent from '../components/event-edit.js';
 import ContentComponent from '../components/content.js';
 import GroupDaysComponent from '../components/group-days.js';
 import DayComponent from '../components/day.js';
 import NoPointsComponent from '../components/nopoints.js';
-import PointsComponent from '../components/points.js';
-import {render, replace, RenderPosition} from "../utils/render.js";
+import PointController from "./point.js";
+import {render, RenderPosition} from "../utils/render.js";
 
-const POINTS_COUNT = 10;
+const SHOWING_TASKS_COUNT_ON_START = 8;
 
+// const SHOWING_TASKS_COUNT_BY_BUTTON = 8;
 
-const renderPoint = (list, point) => {
-  const replaceTaskToEdit = () => {
-    replace(EventEdit, Points);
-  };
+const renderPoints = (taskListElement, data, onDataChange) => {
+  return data.map((item) => {
+    const taskController = new PointController(taskListElement, onDataChange);
+    taskController.render(item);
 
-  const replaceEditToTask = () => {
-    replace(Points, EventEdit);
-  };
-
-  const onEscKeyDown = (evt) => {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-    if (isEscKey) {
-      replaceEditToTask();
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    }
-  };
-  const Points = new PointsComponent(point);
-  Points.setEditButtonClickRollup(() => {
-    replaceTaskToEdit();
-    document.addEventListener(`keydown`, onEscKeyDown);
+    return taskController;
   });
-
-  const EventEdit = new EventEditComponent(point);
-  EventEdit.setEditButtonClickSave((evt) => {
-    evt.preventDefault();
-    replaceEditToTask();
-    document.removeEventListener(`keydown`, onEscKeyDown);
-  });
-
-  render(list, Points, RenderPosition.BEFOREEND);
 };
 
-const getSortedTasks = (tasks, sortType, from, to) => {
-  let sortedTasks = [];
-  const showingTasks = tasks.slice();
+const getSortedPoints = (data, sortType, from, to) => {
+  let sortedPoints = [];
+
+  const showingPoints = data.slice();
 
   switch (sortType) {
     case SortType.TIME:
-      sortedTasks = showingTasks.sort((a, b) => a.dueDate - b.dueDate);
+      sortedPoints = showingPoints.sort((a, b) => a.dueDate - b.dueDate);
       break;
     case SortType.PRICE:
-      sortedTasks = showingTasks.sort((a, b) => b.dueDate - a.dueDate);
+      sortedPoints = showingPoints.sort((a, b) => a.price - b.price);
       break;
     case SortType.EVENT:
-      sortedTasks = showingTasks;
+      sortedPoints = showingPoints;
       break;
   }
-
-  return sortedTasks.slice(from, to);
+  return sortedPoints.slice(from, to);
 };
 
 export default class ContentController {
   constructor(container) {
     this._container = container;
-
-    this._Sort = new SortComponent();
+    this._data = [];
+    this._showedTaskControllers = [];
+    this._showingTasksCount = SHOWING_TASKS_COUNT_ON_START;
+    this._noPointsComponent = new NoPointsComponent();
+    this._sortComponent = new SortComponent();
     this._Content = new ContentComponent();
     this._GroupDays = new GroupDaysComponent();
     this._Day = new DayComponent();
     this._NoPoints = new NoPointsComponent();
+
+    this._onDataChange = this._onDataChange.bind(this);
+    this._onSortTypeChange = this._onSortTypeChange.bind(this);
+    this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
   render(data) {
 
+    this._data = data;
     const container = this._container;
     if (data.length === 0) {
       render(container, this._NoPoints, RenderPosition.AFTERBEGIN);
 
       return;
     }
-    render(container, this._Sort, RenderPosition.AFTERBEGIN);
+    render(container, this._sortComponent, RenderPosition.AFTERBEGIN);
     render(container, this._Content, RenderPosition.BEFOREEND);
 
     const tripDays = document.querySelector(`.trip-days`);
@@ -89,20 +73,31 @@ export default class ContentController {
 
     const day = document.querySelector(`.day`);
     render(day, this._Day, RenderPosition.BEFOREEND);
-
     const siteListElement = document.querySelector(`.trip-events__list`);
-    for (let i = 0; i < POINTS_COUNT; i++) {
-      renderPoint(siteListElement, data[i]);
+
+    const newTasks = renderPoints(siteListElement, this._data.slice(0, this._showingTasksCount), this._onDataChange);
+    this._showedTaskControllers = this._showedTaskControllers.concat(newTasks);
+  }
+  _onDataChange(taskController, oldData, newData) {
+    const index = this._data.findIndex((it) => it === oldData);
+
+    if (index === -1) {
+      return;
     }
 
-    this._Sort.setSortTypeChangeHandler((sortType) => {
-      const sortedTasks = getSortedTasks(data, sortType, 0, POINTS_COUNT);
-      siteListElement.innerHTML = ``;
-      sortedTasks.slice(0, POINTS_COUNT);
-      for (let i = 0; i < POINTS_COUNT; i++) {
-        renderPoint(siteListElement, data[i]);
-      }
-    });
+    this._data = [].concat(this._data.slice(0, index), newData, this._data.slice(index + 1));
+
+    taskController.render(this._data[index]);
   }
 
+  _onSortTypeChange(sortType) {
+    this._showingTasksCount = SHOWING_TASKS_COUNT_ON_START;
+
+    const sortedTasks = getSortedPoints(this._data, sortType, 0, this._showingTasksCount);
+    const siteListElement = document.querySelector(`.trip-events__list`);
+    siteListElement.innerHTML = ``;
+
+    const newTasks = renderPoints(siteListElement, sortedTasks, this._onDataChange);
+    this._showedTaskControllers = newTasks;
+  }
 }
