@@ -1,4 +1,7 @@
-import AbstractComponent from "./abstract-component.js";
+import AbstractSmartComponent from "./abstract-smart-component.js";
+const isRepeating = (repeatingDays) => {
+  return Object.values(repeatingDays).some(Boolean);
+};
 
 export const createEventEditTemplate = (item) => {
   return (
@@ -156,17 +159,63 @@ export const createEventEditTemplate = (item) => {
   );
 };
 
-export default class EventEdit extends AbstractComponent {
+export default class EventEdit extends AbstractSmartComponent {
   constructor(data) {
     super();
 
     this._data = data;
+    this._submitHandler = null;
+
+    this._isDateShowing = !!data.dueDate;
+    this._isRepeatingTask = Object.values(data.repeatingDays).some(Boolean);
+    this._activeRepeatingDays = Object.assign({}, data.repeatingDays);
+
+    this._subscribeOnEvents();
   }
   getTemplate() {
-    return createEventEditTemplate(this._data);
+    return createEventEditTemplate(this._data, {
+      isDateShowing: this._isDateShowing,
+      isRepeatingTask: this._isRepeatingTask,
+      activeRepeatingDays: this._activeRepeatingDays,
+    });
+  }
+  recoveryListeners() {
+    this.setSubmitHandler(this._submitHandler);
+    this._subscribeOnEvents();
+  }
+
+  rerender() {
+    super.rerender();
   }
   setEditButtonClickSave(handler) {
     this.getElement().querySelector(`.event__save-btn`)
       .addEventListener(`click`, handler);
+    this._submitHandler = handler;
+  }
+  _subscribeOnEvents() {
+    const element = this.getElement();
+
+    // element.querySelector(`.card__date-deadline-toggle`)
+    //   .addEventListener(`click`, () => {
+    //     this._isDateShowing = !this._isDateShowing;
+
+    //     this.rerender();
+    //   });
+
+    // element.querySelector(`.card__repeat-toggle`)
+    //   .addEventListener(`click`, () => {
+    //     this._isRepeatingTask = !this._isRepeatingTask;
+
+    //     this.rerender();
+    //   });
+
+    const repeatDays = element.querySelector(`.card__repeat-days`);
+    if (repeatDays) {
+      repeatDays.addEventListener(`change`, (evt) => {
+        this._activeRepeatingDays[evt.target.value] = evt.target.checked;
+
+        this.rerender();
+      });
+    }
   }
 }

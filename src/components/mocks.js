@@ -13,6 +13,15 @@ const getRandomDate = () => {
 
   return targetDate;
 };
+const DefaultRepeatingDays = {
+  "mo": false,
+  "tu": false,
+  "we": false,
+  "th": false,
+  "fr": false,
+  "sa": false,
+  "su": false,
+};
 const months = [
   `Jan`,
   `Feb`,
@@ -97,6 +106,11 @@ const offers = [
     checked: true
   }
 ];
+const generateRepeatingDays = () => {
+  return Object.assign({}, DefaultRepeatingDays, {
+    "mo": Math.random() > 0.5,
+  });
+};
 const citys = [`Москва`, `Питер`, `Сочи`];
 const generatePoint = () => {
   const dueDate = Math.random() > 0.5 ? null : getRandomDate();
@@ -109,6 +123,7 @@ const generatePoint = () => {
     pictures: getPictures(),
     price: getRandomNumber(0, MAX_PRICE),
     dueDate,
+    repeatingDays: dueDate ? DefaultRepeatingDays : generateRepeatingDays(),
     day: getDate(),
     time: getTime(),
   };
