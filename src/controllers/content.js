@@ -7,8 +7,8 @@ import PointController from "./point.js";
 import {render, RenderPosition} from "../utils/render.js";
 
 const SHOWING_TASKS_COUNT_ON_START = 8;
-//const SHOWING_TASKS_COUNT_BY_BUTTON = 8;
 
+// const SHOWING_TASKS_COUNT_BY_BUTTON = 8;
 
 const renderPoints = (taskListElement, data, onDataChange) => {
   return data.map((item) => {
