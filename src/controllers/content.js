@@ -9,7 +9,6 @@ import {render, replace, RenderPosition} from "../utils/render.js";
 
 let POINTS_COUNT = 10;
 
-
 const renderPoint = (list, point) => {
   const replaceTaskToEdit = () => {
     replace(EventEdit, Points);
@@ -50,10 +49,10 @@ const getSortedTasks = (tasks, sortType, from, to) => {
 
   switch (sortType) {
     case SortType.TIME:
-      sortedTasks = showingTasks.sort((a, b) => a.time - b.time);
+      sortedTasks = showingTasks.sort((a, b) => a.dueDate - b.dueDate);
       break;
     case SortType.PRICE:
-      sortedTasks = showingTasks.sort((a, b) => b.price - a.price);
+      sortedTasks = showingTasks.sort((a, b) => a.price - b.price);
       break;
     case SortType.EVENT:
       sortedTasks = showingTasks;
