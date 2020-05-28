@@ -1,4 +1,8 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
+import flatpickr from "flatpickr";
+
+import "flatpickr/dist/flatpickr.min.css";
+
 // const isRepeating = (repeatingDays) => {
 //   return Object.values(repeatingDays).some(Boolean);
 // };
@@ -165,11 +169,14 @@ export default class EventEdit extends AbstractSmartComponent {
 
     this._data = data;
     this._submitHandler = null;
+    this._countCard = 1;
 
     this._isDateShowing = !!data.dueDate;
     this._isRepeatingTask = Object.values(data.repeatingDays).some(Boolean);
     this._activeRepeatingDays = Object.assign({}, data.repeatingDays);
+    this._flatpickr = null;
 
+    this._applyFlatpickr();
     this._subscribeOnEvents();
   }
   reset() {
@@ -195,12 +202,32 @@ export default class EventEdit extends AbstractSmartComponent {
 
   rerender() {
     super.rerender();
+    this._applyFlatpickr();
   }
   setEditButtonClickSave(handler) {
     this.getElement().querySelector(`.event__save-btn`)
       .addEventListener(`click`, handler);
     this._submitHandler = handler;
   }
+
+  _applyFlatpickr() {
+    if (this._flatpickr) {
+      // При своем создании `flatpickr` дополнительно создает вспомогательные DOM-элементы.
+      // Что бы их удалять, нужно вызывать метод `destroy` у созданного инстанса `flatpickr`.
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    if (this._isDateShowing) {
+      const dateElement = (`#event-start-time-${this._countCard}`);
+      this._flatpickr = flatpickr(dateElement, {
+        altInput: true,
+        allowInput: true,
+        defaultDate: this._data.dueDate || `today`,
+      });
+    }
+  }
+
   _subscribeOnEvents() {
     const element = this.getElement();
 
