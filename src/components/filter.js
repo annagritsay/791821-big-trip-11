@@ -51,10 +51,11 @@ export default class FilterComponent extends AbstractComponent {
   }
 
   setFilterChangeHandler(handler) {
-    this.getElement().addEventListener(`click`, (evt) => {
-      const filterName = getFilterNameById(evt.target.id);
-      handler(filterName);
-    });
+    // this.getElement().addEventListener(`click`, (evt) => {
+    //   const filterName = getFilterNameById(evt.target.id);
+    //   handler(filterName);
+    // });
+    console.log(handler);
   }
 
   setFilterClickBtn(handler) {

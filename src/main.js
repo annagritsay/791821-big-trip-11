@@ -5,6 +5,7 @@ import {render, RenderPosition} from "./utils/render.js";
 import {points, menuItems, FilterType} from './components/mocks.js';
 import ContentController from "./controllers/content.js";
 import TasksModel from "./models/task.js";
+//import FilterController from "./controllers/filter.js";
 
 const tasksModel = new TasksModel();
 tasksModel.setTasks(points);
