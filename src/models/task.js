@@ -1,8 +1,17 @@
+import {getTasksByFilter} from "../utils/filter.js";
+import {FilterType} from "../components/mocks.js";
+
 export default class Tasks {
   constructor() {
     this._data = [];
+    this._activeFilterType = FilterType.ALL;
 
     this._dataChangeHandlers = [];
+    this._filterChangeHandlers = [];
+  }
+
+  getTasksAll() {
+    return getTasksByFilter(this._data, this._activeFilterType);
   }
 
   getTasks() {
@@ -12,6 +21,11 @@ export default class Tasks {
   setTasks(tasks) {
     this._data = Array.from(tasks);
     this._callHandlers(this._dataChangeHandlers);
+  }
+
+  setFilter(filterType) {
+    this._activeFilterType = filterType;
+    this._callHandlers(this._filterChangeHandlers);
   }
 
   updateTask(id, task) {
