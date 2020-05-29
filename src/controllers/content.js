@@ -39,9 +39,10 @@ const getSortedPoints = (data, sortType, from, to) => {
 };
 
 export default class ContentController {
-  constructor(container) {
+  constructor(container, tasksModel) {
     this._container = container;
-    this._data = [];
+    this._tasksModel = tasksModel;
+
     this._showedTaskControllers = [];
     this._showingTasksCount = SHOWING_TASKS_COUNT_ON_START;
     this._noPointsComponent = new NoPointsComponent();
@@ -57,9 +58,9 @@ export default class ContentController {
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
-  render(data) {
-
-    this._data = data;
+  render() {
+    const data = this._tasksModel.getTasks();
+    // const isAllTasksArchived = data.every((item) => item.isArchive);
     const container = this._container;
     if (data.length === 0) {
       render(container, this._NoPoints, RenderPosition.AFTERBEGIN);
@@ -74,21 +75,22 @@ export default class ContentController {
 
     const day = document.querySelector(`.day`);
     render(day, this._Day, RenderPosition.BEFOREEND);
+    this._renderPoints(data.slice(0, this._showingTasksCount));
+  }
+
+  _renderPoints(data) {
     const siteListElement = document.querySelector(`.trip-events__list`);
 
-    const newTasks = renderPoints(siteListElement, this._data.slice(0, this._showingTasksCount), this._onDataChange, this._onViewChange);
+    const newTasks = renderPoints(siteListElement, data, this._onDataChange, this._onViewChange);
     this._showedTaskControllers = this._showedTaskControllers.concat(newTasks);
+    this._showingTasksCount = this._showedTaskControllers.length;
   }
   _onDataChange(taskController, oldData, newData) {
-    const index = this._data.findIndex((it) => it === oldData);
+    const isSuccess = this._tasksModel.updateTask(oldData.id, newData);
 
-    if (index === -1) {
-      return;
+    if (isSuccess) {
+      taskController.render(newData);
     }
-
-    this._data = [].concat(this._data.slice(0, index), newData, this._data.slice(index + 1));
-
-    taskController.render(this._data[index]);
   }
 
   _onViewChange() {
@@ -97,8 +99,8 @@ export default class ContentController {
 
   _onSortTypeChange(sortType) {
     this._showingTasksCount = SHOWING_TASKS_COUNT_ON_START;
+    const sortedTasks = getSortedPoints(this._tasksModel.getTasks(), sortType, 0, this._showingTasksCount);
 
-    const sortedTasks = getSortedPoints(this._data, sortType, 0, this._showingTasksCount);
     const siteListElement = document.querySelector(`.trip-events__list`);
     siteListElement.innerHTML = ``;
 

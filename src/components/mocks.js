@@ -144,7 +144,7 @@ const menuItems = [
     isActive: false
   }
 ];
-const filters = [
+const FilterType = [
   {
     name: `Everything`,
   },
@@ -156,4 +156,4 @@ const filters = [
   },
 ];
 export {generatePoint, generatePoints};
-export {points, menuItems, filters};
+export {points, menuItems, FilterType};

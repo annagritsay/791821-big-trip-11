@@ -1,4 +1,4 @@
-export default class Points {
+export default class Tasks {
   constructor() {
     this._data = [];
 
